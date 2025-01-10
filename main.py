@@ -1,7 +1,8 @@
 from PyQt6.QtWidgets import QApplication,QLabel,QWidget,QGridLayout,\
-                             QLineEdit,QPushButton,QMainWindow,QTableWidget,\
-                            QTableWidgetItem,QDialog,QVBoxLayout,QComboBox,QMessageBox
-from PyQt6.QtGui import QAction 
+                 QLineEdit,QPushButton,QMainWindow,QTableWidget,\
+                 QTableWidgetItem,QDialog,QVBoxLayout,QComboBox,QMessageBox,\
+                 QToolBar
+from PyQt6.QtGui import QAction,QIcon
 import sys
 import sqlite3
 from PyQt6.QtCore import Qt
@@ -19,9 +20,9 @@ class MainWindow(QMainWindow):# inherits From QMainWindow a predefined class tha
         edit_menu_item=self.menuBar().addMenu("&Edit")
         
         #Creates an action labeled "Add student" that can be used in "File" menu
-        add_student_action=QAction("Add Student",self)
+        add_student_action=QAction(QIcon("icons\\add.png"),"Add Student",self)
         add_student_action.triggered.connect(self.insert)
-        search_edit_action=QAction("Search",self)
+        search_edit_action=QAction(QIcon("icons\\search.png"),"Search",self)
         search_edit_action.triggered.connect(self.search)
         
          
@@ -39,6 +40,15 @@ class MainWindow(QMainWindow):# inherits From QMainWindow a predefined class tha
         self.table.setHorizontalHeaderLabels(("ID","Name","Course","Mobile"))# set header labels for columns and tuple id specifies name of each col
         self.table.verticalHeader().setVisible(False)
         self.setCentralWidget(self.table)#places Qtablewidget in main windows central area replacing any existing central widgets
+        
+        #create toolbar and add toolbar elementsis widget that provides way to create 
+        # and organize toolbar buttons ,menus and other controls
+        #QToolBar 
+        toolbar=QToolBar()
+        toolbar.setMovable(True)#determines whether toolbar can be moved or repositioned by user
+        self.addToolBar(toolbar)
+        toolbar.addAction(add_student_action)
+        toolbar.addAction(search_edit_action)
         
     def load_data(self):
         connection=sqlite3.connect("data.db")
