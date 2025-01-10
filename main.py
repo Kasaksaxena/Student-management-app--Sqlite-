@@ -34,7 +34,7 @@ class MainWindow(QMainWindow):# inherits From QMainWindow a predefined class tha
         
         #Removes the default behavior for "About" menu action 
         about_action.setMenuRole(QAction.MenuRole.NoRole)
-        
+        about_action.triggered.connect(self.about)
         self.table=QTableWidget()# A widget that displays data in a tabular form(like a spreadsheet)
         self.table.setColumnCount(4)# Defines number of columns in the table
         self.table.setHorizontalHeaderLabels(("ID","Name","Course","Mobile"))# set header labels for columns and tuple id specifies name of each col
@@ -105,7 +105,10 @@ class MainWindow(QMainWindow):# inherits From QMainWindow a predefined class tha
     def delete(self):
         dialog=DeleteDialog()
         dialog.exec()
-               
+    
+    def about(self):
+        dialog=AboutDialog()
+        dialog.exec()           
         
 class InsertDialog(QDialog):#creates a diaolog window where user can input student data  
   def __init__(self):
@@ -266,7 +269,7 @@ class DeleteDialog(QDialog):
         
         connection=sqlite3.connect("data.db")       
         cursor=connection.cursor()
-        cursor.execute("DELETE FROM  Student_Data WHERE Id=?",(student_id,))
+        cursor.execute("DELETE FROM  Student_Data WHERE Id=?",(student_id))
         connection.commit()
         cursor.close()
         connection.close()
@@ -278,7 +281,20 @@ class DeleteDialog(QDialog):
         confirmation_widget.setWindowTitle("Success")
         confirmation_widget.setText("The record was deleted successfully!")
         confirmation_widget.exec()
-        
+ 
+class AboutDialog(QMessageBox):   
+  def __init__(self):
+        super().__init__()
+        self.setWindowTitle("About")
+        conetnt="""
+This Student Management App simplifies the process of managing student data efficiently.
+It allows users to add, edit, and delete student records, including details like name, course, 
+and contact information.
+Built using Python and PyQt6, the app ensures a user-friendly interface with real-time updates for seamless operation.
+Perfect for educational institutions and small-scale management needs.
+
+        """
+        self.setText(conetnt)    
 app=QApplication(sys.argv)
 student_app=MainWindow()
 student_app.show()
