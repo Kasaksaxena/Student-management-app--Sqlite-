@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QApplication,QLabel,QWidget,QGridLayout,\
                  QLineEdit,QPushButton,QMainWindow,QTableWidget,\
                  QTableWidgetItem,QDialog,QVBoxLayout,QComboBox,QMessageBox,\
-                 QToolBar
+                 QToolBar,QStatusBar
 from PyQt6.QtGui import QAction,QIcon
 import sys
 import sqlite3
@@ -11,7 +11,7 @@ class MainWindow(QMainWindow):# inherits From QMainWindow a predefined class tha
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Student Management System")  
-        
+        self.setMinimumSize(800,600)
         # menubar-creates a menu bar for the main window
         #addMenu- Add a"File"or "Help" menu to the menubar.. the & allow the "F" or "H" to be used
                   # as keyboard shortcut(Alt +F)  
@@ -50,6 +50,34 @@ class MainWindow(QMainWindow):# inherits From QMainWindow a predefined class tha
         toolbar.addAction(add_student_action)
         toolbar.addAction(search_edit_action)
         
+        # create a status barr and its elements
+        self.statusbar=QStatusBar()
+        self.setStatusBar(self.statusbar)
+        
+        # Detect a click
+        self.table.cellClicked.connect(self.cell_clicked)
+        
+    def cell_clicked(self):
+        edit_button=QPushButton("Edit Record")  
+        edit_button.clicked.connect(self.edit) 
+        delete_button=QPushButton("Delete Record") 
+        delete_button.clicked.connect(self.delete) 
+        
+        #checks if any QPushbotton in status bar and remove them
+        #ensures that any existing buttons are cleared before adding new ones
+        children=self.findChildren(QPushButton)
+        if children:
+            for child in children:
+                self.statusbar.removeWidget(child)
+                
+                
+        self.statusbar.addWidget(edit_button)
+        self.statusbar.addWidget(delete_button)
+        
+         
+         
+        
+        
     def load_data(self):
         connection=sqlite3.connect("data.db")
         result=connection.execute(" SELECT * FROM Student_Data")
@@ -70,7 +98,14 @@ class MainWindow(QMainWindow):# inherits From QMainWindow a predefined class tha
         search_dialog=SearchDialog()
         search_dialog.exec()
         
-            
+    def edit(self):
+        dialog=EditDialog()
+        dialog.exec()
+    
+    def delete(self):
+        dialog=DeleteDialog()
+        dialog.exec()
+               
         
 class InsertDialog(QDialog):#creates a diaolog window where user can input student data  
   def __init__(self):
@@ -150,8 +185,11 @@ class SearchDialog(QDialog):
         Connection.close()                      
         
      
-      
+class EditDialog():
+    pass      
           
+class DeleteDialog():
+    pass      
 
 app=QApplication(sys.argv)
 student_app=MainWindow()
